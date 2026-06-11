@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechVishalBoss - Number Lookup API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .header p {
+            color: #888;
+            font-size: 0.95em;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 212, 255, 0.3);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            color: #4caf50;
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            color: #f44336;
+        }
+
+        .alert-info {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid rgba(33, 150, 243, 0.5);
+            color: #2196f3;
+        }
+
+        .result-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .result-header h3 {
+            color: #00d4ff;
+            font-size: 1.1em;
+        }
+
+        .copy-btn {
+            background: transparent;
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            padding: 6px 12px;
+            font-size: 0.85em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .result-content {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            word-break: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-extracted {
+            background: rgba(76, 175, 80, 0.05);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .result-extracted h4 {
+            color: #4caf50;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .extracted-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+            font-size: 0.9em;
+        }
+
+        .extracted-item:last-child {
+            border-bottom: none;
+        }
+
+        .extracted-key {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .extracted-value {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-section h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+        }
+
+        .history-item-number {
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .history-item-time {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        .history-delete {
+            background: transparent;
+            color: #f44336;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 0;
+            transition: color 0.3s ease;
+        }
+
+        .history-delete:hover {
+            color: #ff6b6b;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .copy-btn {
+                align-self: flex-end;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 TechVishalBoss</h1>
+            <p>Number Lookup & Information Service</p>
+        </div>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="numberInput">Enter Mobile Number</label>
+                <input 
+                    type="text" 
+                    id="numberInput" 
+                    placeholder="e.g., +919876543210 or 9876543210"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="alert alert-info" id="infoAlert">
+                ℹ️ Enter a valid mobile number to get detailed information
+            </div>
+
+            <div class="alert alert-error" id="errorAlert"></div>
+            <div class="alert alert-success" id="successAlert"></div>
+
+            <div class="button-group">
+                <button class="btn-primary" id="submitBtn" onclick="handleSearch()">
+                    Search <span class="spinner" id="spinner" style="display: none;"></span>
+                </button>
+                <button class="btn-secondary" id="clearBtn" onclick="clearForm()">Clear</button>
+            </div>
+
+            <div class="result-box" id="resultBox">
+                <div class="result-header">
+                    <h3>Result</h3>
+                    <button class="copy-btn" onclick="copyResult()">📋 Copy</button>
+                </div>
+
+                <div id="resultContent" class="result-content"></div>
+
+                <div class="result-extracted" id="extractedBox" style="display: none;">
+                    <h4>📊 Extracted Information</h4>
+                    <div id="extractedData"></div>
+                </div>
+
+                <div style="font-size: 0.85em; color: #888; text-align: right;">
+                    <span id="resultTime"></span>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>📜 Search History</h3>
+                    <button class="copy-btn" onclick="clearHistory()" style="padding: 8px 12px;">Clear All</button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <div class="empty-history">No searches yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/number-info';
+        const HISTORY_KEY = 'techvishalboss_history';
+        const MAX_HISTORY = 5;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+            document.getElementById('numberInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSearch();
+            });
+        });
+
+        async function handleSearch() {
+            const numberInput = document.getElementById('numberInput').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const spinner = document.getElementById('spinner');
+
+            if (!numberInput) {
+                showAlert('error', 'Please enter a number');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            hideAllAlerts();
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ number: numberInput })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 'success') {
+                    displayResult(data);
+                    addToHistory(numberInput, data.result);
+                    showAlert('success', 'Result fetched successfully!');
+                } else {
+                    showAlert('error', data.message || 'Failed to fetch result');
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                showAlert('error', 'Network error: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        function displayResult(data) {
+            const resultBox = document.getElementById('resultBox');
+            const resultContent = document.getElementById('resultContent');
+            const extractedBox = document.getElementById('extractedBox');
+            const extractedData = document.getElementById('extractedData');
+            const resultTime = document.getElementById('resultTime');
+
+            resultContent.textContent = data.result || 'No result';
+            resultTime.textContent = new Date(data.timestamp).toLocaleString();
+
+            if (data.extracted) {
+                extractedBox.style.display = 'block';
+                extractedData.innerHTML = Object.entries(data.extracted)
+                    .map(([key, value]) => `
+                        <div class="extracted-item">
+                            <span class="extracted-key">${key}:</span>
+                            <span class="extracted-value">${value}</span>
+                        </div>
+                    `)
+                    .join('');
+            } else {
+                extractedBox.style.display = 'none';
+            }
+
+            resultBox.classList.add('show');
+        }
+
+        function copyResult() {
+            const resultContent = document.getElementById('resultContent').textContent;
+            navigator.clipboard.writeText(resultContent).then(() => {
+                showAlert('success', 'Copied to clipboard!');
+            }).catch(() => {
+                showAlert('error', 'Failed to copy');
+            });
+        }
+
+        function showAlert(type, message) {
+            hideAllAlerts();
+            const alertId = `${type}Alert`;
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                alert.textContent = message;
+                alert.classList.add('show');
+            }
+        }
+
+        function hideAllAlerts() {
+            ['errorAlert', 'successAlert', 'infoAlert'].forEach(id => {
+                document.getElementById(id).classList.remove('show');
+            });
+        }
+
+        function addToHistory(number, result) {
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            
+            history = history.filter(item => item.number !== number);
+            
+            history.unshift({
+                number,
+                timestamp: new Date().toISOString(),
+                result: result.substring(0, 100)
+            });
+
+            history = history.slice(0, MAX_HISTORY);
+            
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            const historyList = document.getElementById('historyList');
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="empty-history">No searches yet</div>';
+                return;
+            }
+
+            historyList.innerHTML = history.map((item, index) => `
+                <div class="history-item" onclick="searchFromHistory('${item.number}')">
+                    <div>
+                        <span class="history-item-number">${item.number}</span>
+                        <br>
+                        <span class="history-item-time">${new Date(item.timestamp).toLocaleString()}</span>
+                    </div>
+                    <button class="history-delete" onclick="event.stopPropagation(); deleteFromHistory(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function searchFromHistory(number) {
+            document.getElementById('numberInput').value = number;
+            handleSearch();
+        }
+
+        function deleteFromHistory(index) {
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            history.splice(index, 1);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            loadHistory();
+        }
+
+        function clearHistory() {
+            if (confirm('Clear all search history?')) {
+                localStorage.removeItem(HISTORY_KEY);
+                loadHistory();
+                showAlert('success', 'History cleared');
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('numberInput').value = '';
+            document.getElementById('resultBox').classList.remove('show');
+            hideAllAlerts();
+            document.getElementById('infoAlert').classList.add('show');
+        }
+    </script>
+</body>
+</html>
